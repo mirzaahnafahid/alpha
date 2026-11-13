@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <link rel="manifest" href="manifest.json">
+  <title>Alpha</title>
+  <link rel="icon" type="image/svg+xml" href="icons/wolf.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- HOME SCREEN -->
+  <main class="screen" id="home">
+    <header class="topbar">
+      <div class="brand">
+        <img class="logo" src="icons/wolf.svg" alt="Alpha wolf logo" width="44" height="44">
+        <div>
+          <h1>Alpha</h1>
+          <p class="muted">Build discipline. Track progress.</p>
+        </div>
+      </div>
+      <button class="icon-btn" id="open-settings" aria-label="Settings">&#9881;</button>
+    </header>
+
+    <input class="search" type="search" placeholder="Search streaks" aria-label="Search streaks">
+
+    <div class="list-head muted">
+      <span>Your streaks</span>
+      <span id="plan-label">0 of 1 on Free</span>
+    </div>
+
+    <div id="streak-list"></div>
+
+    <button class="new-btn" id="new-btn" type="button">+ New streak</button>
+    <p class="muted small limit-note" id="limit-note" hidden>The free plan includes 1 streak. You can add as many habits as you want inside it.</p>
+
+    <p class="footnote muted">Saved on this device</p>
+  </main>
+
+  <!-- NEW STREAK FORM -->
+  <dialog id="new-dialog" aria-labelledby="dlg-title">
+    <form id="new-form" class="dlg">
+      <h2 id="dlg-title">New streak</h2>
+      <label class="muted small" for="streak-name">Name</label>
+      <input id="streak-name" class="input" maxlength="60" required placeholder="Name your journey" autocomplete="off">
+      <label class="muted small" for="streak-tagline">Tagline (optional)</label>
+      <input id="streak-tagline" class="input" maxlength="80" placeholder="A short line to remind you why" autocomplete="off">
+      <p id="form-error" class="err small" role="alert" hidden></p>
+      <div class="dlg-actions">
+        <button type="button" id="cancel-new" class="btn ghost">Cancel</button>
+        <button type="submit" class="btn solid">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- HABIT FORM (add and edit) -->
+  <dialog id="habit-dialog" aria-labelledby="habit-title">
+    <form id="habit-form" class="dlg">
+      <h2 id="habit-title">New habit</h2>
+      <label class="muted small" for="habit-name">Name</label>
+      <input id="habit-name" class="input" maxlength="60" required placeholder="e.g. Drink water" autocomplete="off">
+
+      <label class="muted small" for="habit-type">How do you track it?</label>
+      <select id="habit-type" class="input">
+        <option value="checkbox">Checkbox (done or not done)</option>
+        <option value="number">Number target (like 65 / 100)</option>
+      </select>
+
+      <div id="num-fields" hidden>
+        <label class="muted small" for="habit-target">Daily target</label>
+        <input id="habit-target" class="input" type="number" min="0" step="any" inputmode="decimal" placeholder="e.g. 100">
+        <label class="muted small" for="habit-unit">Unit (optional)</label>
+        <input id="habit-unit" class="input" maxlength="20" placeholder="e.g. reps, L, minutes, pages" autocomplete="off">
+        <label class="muted small" for="habit-step">Quick-add amount</label>
+        <input id="habit-step" class="input" type="number" min="0" step="any" inputmode="decimal" placeholder="e.g. 10">
+      </div>
+
+      <div id="edit-tools" class="dlg-tools" hidden>
+        <button type="button" id="habit-up" class="btn ghost">Move up</button>
+        <button type="button" id="habit-down" class="btn ghost">Move down</button>
+        <button type="button" id="habit-delete" class="btn danger">Delete</button>
+      </div>
+
+      <p id="habit-error" class="err small" role="alert" hidden></p>
+      <div class="dlg-actions">
+        <button type="button" id="cancel-habit" class="btn ghost">Cancel</button>
+        <button type="submit" class="btn solid">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- NUMBER PROGRESS PANEL -->
+  <dialog id="progress-dialog" aria-labelledby="progress-title">
+    <form id="progress-form" class="dlg">
+      <h2 id="progress-title">Log progress</h2>
+      <p class="muted small" id="progress-target"></p>
+      <input id="progress-input" class="input big-input" type="number" min="0" step="any" inputmode="decimal" aria-label="Amount done today">
+      <div class="dlg-tools">
+        <button type="button" id="progress-minus" class="btn ghost">&minus;</button>
+        <button type="button" id="progress-plus" class="btn ghost">+</button>
+        <button type="button" id="progress-full" class="btn ghost">Set to target</button>
+      </div>
+      <p id="progress-error" class="err small" role="alert" hidden></p>
+      <div class="dlg-actions">
+        <button type="button" id="cancel-progress" class="btn ghost">Cancel</button>
+        <button type="submit" class="btn solid">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- EDIT STREAK FORM -->
+  <dialog id="streak-dialog" aria-labelledby="streak-dlg-title">
+    <form id="streak-form" class="dlg">
+      <h2 id="streak-dlg-title">Edit streak</h2>
+      <label class="muted small" for="edit-streak-name">Name</label>
+      <input id="edit-streak-name" class="input" maxlength="60" required autocomplete="off">
+      <label class="muted small" for="edit-streak-tagline">Tagline (optional)</label>
+      <input id="edit-streak-tagline" class="input" maxlength="80" autocomplete="off">
+      <div class="dlg-tools">
+        <button type="button" id="streak-delete" class="btn danger">Delete streak</button>
+      </div>
+      <p id="streak-error" class="err small" role="alert" hidden></p>
+      <div class="dlg-actions">
+        <button type="button" id="cancel-streak" class="btn ghost">Cancel</button>
+        <button type="submit" class="btn solid">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- SETTINGS SCREEN -->
+  <main class="screen" id="settings" hidden>
+    <header class="topbar">
+      <button class="icon-btn" id="settings-back" aria-label="Back">&#8249;</button>
+      <h2 class="title">Settings</h2>
+      <span class="icon-spacer"></span>
+    </header>
+
+    <section class="set-section">
+      <h3>Backup &amp; Restore</h3>
+      <p class="muted small">Your data lives only on this device. Save a backup file now and then and keep it somewhere safe, like a cloud drive, email, or a USB stick.</p>
+      <p class="muted small" id="last-backup">Last backup: never</p>
+      <button type="button" class="btn solid wide" id="export-btn">Export backup</button>
+      <button type="button" class="btn ghost wide" id="import-btn">Import backup</button>
+      <input type="file" id="import-file" accept=".json,application/json" hidden>
+      <p id="backup-msg" class="small" role="status" hidden></p>
+    </section>
+
+    <section class="set-section">
+      <h3>Storage</h3>
+      <p class="muted small" id="storage-note">Checking storage...</p>
+    </section>
+
+    <section class="set-section">
+      <h3>About</h3>
+      <p class="muted small">Alpha &middot; version 0.1. Works offline. No account and no tracking.</p>
+    </section>
+  </main>
+
+  <!-- STREAK SCREEN -->
+  <main class="screen" id="streak" hidden>
+    <header class="topbar">
+      <button class="icon-btn" id="back" aria-label="Back">&#8249;</button>
+      <h2 class="title" id="streak-title">Streak</h2>
+      <button class="icon-btn" id="streak-menu" aria-label="Streak options">&#8942;</button>
+    </header>
+
+    <!-- TODAY TAB -->
+    <section class="panel" id="tab-today">
+      <div class="daynav">
+        <button type="button" class="nav-btn" id="prev-day" aria-label="Previous day">&#8249; Previous</button>
+        <button type="button" class="today-link" id="go-today" hidden>Back to today</button>
+        <button type="button" class="nav-btn" id="next-day" aria-label="Next day">Next &#8250;</button>
+      </div>
+
+      <div class="dayrow">
+        <div>
+          <div class="daynum" id="daynum">Day 01</div>
+          <div class="muted small" id="daydate"></div>
+        </div>
+        <div class="pct">
+          <strong id="pct">0%</strong>
+          <span class="muted small" id="count">No habits yet</span>
+        </div>
+      </div>
+
+      <div class="bar"><i id="pct-bar" style="width:0%"></i></div>
+
+      <div class="habits" id="habits"></div>
+
+      <button type="button" class="add-habit" id="add-habit">+ Add habit</button>
+
+      <label class="muted small" for="reflection">Daily reflection</label>
+      <textarea id="reflection" class="reflection" placeholder="How did today go?"></textarea>
+      <p class="footnote muted">Everything saves automatically on this device.</p>
+    </section>
+
+    <!-- HISTORY TAB -->
+    <section class="panel" id="tab-history" hidden>
+      <div class="cal-head">
+        <button type="button" class="nav-btn" id="cal-prev" aria-label="Previous month">&#8249;</button>
+        <h3 id="cal-title">Month</h3>
+        <button type="button" class="nav-btn" id="cal-next" aria-label="Next month">&#8250;</button>
+      </div>
+      <div class="cal-week" aria-hidden="true">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <p class="muted small cal-legend">White: all habits done. Red: missed. Tap a day to open it.</p>
+    </section>
+
+    <!-- STATS TAB -->
+    <section class="panel" id="tab-stats" hidden>
+      <div class="stat-tiles">
+        <div><strong id="st-current">0</strong><span class="muted">Current streak</span></div>
+        <div><strong id="st-longest">0</strong><span class="muted">Longest streak</span></div>
+        <div><strong id="st-total">0</strong><span class="muted">Days completed</span></div>
+      </div>
+      <div class="muted small">Habit progress</div>
+      <div id="st-habits"></div>
+    </section>
+
+    <nav class="tabs" aria-label="Streak sections">
+      <button type="button" class="active" data-tab="today">Today</button>
+      <button type="button" data-tab="history">History</button>
+      <button type="button" data-tab="stats">Stats</button>
+    </nav>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
